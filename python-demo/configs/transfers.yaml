@@ -1,0 +1,16 @@
+server:
+  address: "corecast.bitquery.io"
+  authorization: "ory_at_"
+  insecure: false
+
+stream:
+  type: "transfers"
+
+filters:
+  senders:
+    - "DSqMPMsMAbEJVNuPKv1ZFdzt6YvJaDPDddfeW7ajtqds"
+  receivers:
+    - "ReceiverAddressHere..."
+  tokens:
+    - "So11111111111111111111111111111111111111112" # SOL
+    - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC

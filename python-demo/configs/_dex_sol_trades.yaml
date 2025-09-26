@@ -1,0 +1,12 @@
+server:
+  address: "corecast.bitquery.io"
+  authorization: "ory_at_"
+  insecure: false
+
+stream:
+  type: "dex_trades"
+
+# Only trades with SOL token
+filters:
+  tokens:
+    - "So11111111111111111111111111111111111111112" # WSOL

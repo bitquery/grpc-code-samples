@@ -1,0 +1,102 @@
+{
+  "Block": {
+    "Slot": 370030401
+  },
+  "Transaction": {
+    "Index": 455,
+    "Signature": "2gyW9NtqCRwsGGWoeJkGGQNPrQfcDT2dBQxUKXXVcC7QQbNBey9DtQLNkCRn7yU5N1H8YcFQESTC6KbQ7n1HyTwj",
+    "Status": {
+      "Success": true,
+      "ErrorMessage": ""
+    },
+    "Header": {
+      "Fee": 5000,
+      "FeePayer": "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc",
+      "RecentBlockhash": "AVckGJJDHfYoKjniusYXAraC1Po1mhgX22C3c9tSdZUE",
+      "Signer": "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc",
+      "Signatures": [
+        "2gyW9NtqCRwsGGWoeJkGGQNPrQfcDT2dBQxUKXXVcC7QQbNBey9DtQLNkCRn7yU5N1H8YcFQESTC6KbQ7n1HyTwj"
+      ],
+      "Accounts": [
+        {
+          "Address": "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc",
+          "IsSigner": true,
+          "IsWritable": true
+        },
+        {
+          "Address": "C616NHpqpaiYpqVAv619QL73vEqKJs1mjsJLtAuCzMX6",
+          "IsSigner": false,
+          "IsWritable": true
+        },
+        {
+          "Address": "Vote111111111111111111111111111111111111111",
+          "IsSigner": false,
+          "IsWritable": false
+        }
+      ]
+    },
+    "TotalBalanceUpdates": [
+      {
+        "PreBalance": 82844277367,
+        "PostBalance": 82844272367,
+        "AccountIndex": 0
+      },
+      {
+        "PreBalance": 6473821435,
+        "PostBalance": 6473821435,
+        "AccountIndex": 1
+      },
+      {
+        "PreBalance": 1,
+        "PostBalance": 1,
+        "AccountIndex": 2
+      }
+    ],
+    "ParsedIdlInstructions": [
+      {
+        "Index": 0,
+        "Depth": 0,
+        "CallerIndex": -1,
+        "ExternalSeqNumber": 1,
+        "InternalSeqNumber": 0,
+        "Program": {
+          "Address": "Vote111111111111111111111111111111111111111",
+          "Parsed": true,
+          "Json": "{\"name\":\"TowerSync\",\"docs\":null,\"accounts\":[{\"IdlAccount\":{\"docs\":null,\"name\":\"VoteAccount\",\"isMut\":true,\"isSigner\":false,\"optional\":false,\"isOptional\":false},\"IdlAccounts\":null},{\"IdlAccount\":{\"docs\":null,\"name\":\"VoteAuthority\",\"isMut\":false,\"isSigner\":true,\"optional\":false,\"isOptional\":false},\"IdlAccounts\":null}],\"args\":[{\"name\":\"towerSync\",\"docs\":null,\"type\":{\"AsString\":\"\",\"AsIdlTypeVec\":null,\"AsIdlTypeOption\":null,\"AsIdlTypeDefined\":{\"defined\":{\"name\":\"TowerSync\"},\"with_bin\":true},\"AsIdlTypeArray\":null,\"AsMap\":null,\"AsBTreeMap\":null,\"AsTuple\":null}}]}",
+          "Signature": "GGoKPaxSL9aB7HrF5Nfedx1iBUQiR917ziqYSy9ac3Nn",
+          "Name": "vote",
+          "Method": "TowerSync",
+          "Arguments": [
+            {
+              "Name": "towerSync",
+              "Type": "TowerSync",
+              "Json": "{\"voteData\":{\"root\":370030369,\"lockouts\":[{\"offset\":31,\"confirmationCount\":370030370},{\"offset\":30,\"confirmationCount\":370030371},{\"offset\":29,\"confirmationCount\":370030372},{\"offset\":28,\"confirmationCount\":370030373},{\"offset\":27,\"confirmationCount\":370030374},{\"offset\":26,\"confirmationCount\":370030375},{\"offset\":25,\"confirmationCount\":370030376},{\"offset\":24,\"confirmationCount\":370030377},{\"offset\":23,\"confirmationCount\":370030378},{\"offset\":22,\"confirmationCount\":370030379},{\"offset\":21,\"confirmationCount\":370030380},{\"offset\":20,\"confirmationCount\":370030381},{\"offset\":19,\"confirmationCount\":370030382},{\"offset\":18,\"confirmationCount\":370030383},{\"offset\":17,\"confirmationCount\":370030384},{\"offset\":16,\"confirmationCount\":370030385},{\"offset\":15,\"confirmationCount\":370030386},{\"offset\":14,\"confirmationCount\":370030387},{\"offset\":13,\"confirmationCount\":370030388},{\"offset\":12,\"confirmationCount\":370030389},{\"offset\":11,\"confirmationCount\":370030390},{\"offset\":10,\"confirmationCount\":370030391},{\"offset\":9,\"confirmationCount\":370030392},{\"offset\":8,\"confirmationCount\":370030393},{\"offset\":7,\"confirmationCount\":370030394},{\"offset\":6,\"confirmationCount\":370030395},{\"offset\":5,\"confirmationCount\":370030396},{\"offset\":4,\"confirmationCount\":370030397},{\"offset\":3,\"confirmationCount\":370030398},{\"offset\":2,\"confirmationCount\":370030399},{\"offset\":1,\"confirmationCount\":370030400}]},\"hash\":\"7N2XQwSkdmx2jxBnEUwBCsAKwqd7whjkWH2cfjjgFNKw\",\"timestamp\":1759144573,\"blockId\":\"BGVt5SCDT9kq74aZu2dp8iJZanDQNVtAZf4SZmjMNX31\"}",
+              "Address": ""
+            }
+          ],
+          "AccountNames": [
+            "VoteAccount",
+            "VoteAuthority"
+          ]
+        },
+        "Accounts": [
+          {
+            "Address": "C616NHpqpaiYpqVAv619QL73vEqKJs1mjsJLtAuCzMX6",
+            "IsSigner": false,
+            "IsWritable": true
+          },
+          {
+            "Address": "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc",
+            "IsSigner": true,
+            "IsWritable": true
+          }
+        ],
+        "Logs": [
+          "Program Vote111111111111111111111111111111111111111 invoke [1]",
+          "Program Vote111111111111111111111111111111111111111 success"
+        ],
+        "Data": "67MGn21RtRddenTCJLoJeXAg2KJ31Wh6KHvx9Matk4n3ak5Wz2w8vYQygZgE58mcoBvLrSZsuvQbv55ftMSTRgfm2fmKHfrX8SKjcBg1apjhooPDujCX7rW3rdwvUAGaVzbqpPvGx5vfqkBpjVWaiVHjjT87xXqD1DA4x1fEU4jGibasPjuazFq54dTghNskWVehPyPRgF"
+      }
+    ]
+  }
+}

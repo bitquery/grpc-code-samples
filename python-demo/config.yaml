@@ -3,7 +3,7 @@
 
 server:
   address: "corecast.bitquery.io"
-  authorization: "ory_at_OA96Ck2Bn5v60P6fsJNGkuQsBgXuAy0VPn3e6rOClIA.F-k8xMMFuXqLcvUJatt39PDg9O-Q9B4wT0SOOaLA0BM"
+  authorization: "ory_at_"
   insecure: false
 
 # Stream type - uncomment ONE

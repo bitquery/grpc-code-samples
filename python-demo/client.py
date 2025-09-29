@@ -10,7 +10,7 @@ import base58
 from typing import Optional, List
 from contextlib import contextmanager
 
-from proto import corecast_pb2_grpc, corecast_pb2, request_pb2
+from bitquery_corecast_proto import corecast_pb2_grpc, corecast_pb2, request_pb2
 from config import Config, load_config
 from protobuf_utils import print_protobuf_message
 

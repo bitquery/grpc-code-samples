@@ -9,6 +9,8 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+This will install the required dependencies including the `bitquery-corecast-proto` package which provides the protobuf definitions for CoreCast services.
+
 ## Authentication
 
 The application requires a Bitquery CoreCast authorization token.
@@ -213,4 +215,14 @@ python3 example_protobuf_debug.py
 - gRPC Python libraries
 - PyYAML for configuration
 - base58 for address encoding
-- bitquery-pb2-kafka-package for Solana protobuf definitions
+- bitquery-corecast-proto for CoreCast protobuf definitions
+
+## Proto Files
+
+This project uses protobuf definitions from the [bitquery-corecast-proto](https://pypi.org/project/bitquery-corecast-proto/) PyPI package. This package contains all the necessary `.proto` files and generated Python classes for communicating with Bitquery's CoreCast service.
+
+The package includes:
+- CoreCast service definitions
+- Request and response message types
+- Stream message definitions
+- Solana-specific message types (blocks, DEX trades, transfers, etc.)

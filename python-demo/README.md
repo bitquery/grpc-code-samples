@@ -50,6 +50,64 @@ python3 main.py
 (program IN filter.programs) AND (pool IN filter.pools) AND (token IN filter.tokens)
 ```
 
+## Additional Options
+
+### Log Level
+
+Control the verbosity of logging output:
+
+```bash
+python main.py --log-level DEBUG
+```
+
+Available log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`
+
+### Latency Testing Mode
+
+Measure stream latency by capturing timestamps for the first 10 unique block slots:
+
+```bash
+python main.py --latency
+```
+
+**What it does:**
+
+- Enables minimal logging mode optimized for latency measurement
+- Captures only the first occurrence of each unique slot
+- Stops automatically after collecting 10 unique slots
+- Outputs block slot numbers and received timestamps for analysis
+
+**Example output:**
+
+```
+Block Slot: 370054155
+Received Timestamp: 2025-09-29T13:52:48.872508
+Block Slot: 370054156
+Received Timestamp: 2025-09-29T13:52:49.393580
+...
+```
+
+**Analyzing latency data:**
+
+After capturing latency data, you can analyze it using the provided analysis script:
+
+```bash
+# Capture latency data (redirect to file)
+python main.py --latency > latency_test.log 2>&1
+
+# Analyze the results
+python analyze_latency.py latency_test.log
+```
+
+The `analyze_latency.py` script will:
+
+- Compare received timestamps against actual block times from Solana RPC
+- Calculate latency statistics (min, max, average, median, P95, P99)
+- Show latency distribution across different time ranges
+- Report what percentage of messages arrived within the same second as the block time
+
+**Note:** The latency flag currently only works with `dex_trades` stream type.
+
 ## Configuration
 
 All parameters are loaded from `config.yaml` in the project root.
@@ -76,8 +134,6 @@ server:
 stream:
   type: "dex_trades" # or dex_orders, dex_pools, transactions, transfers, balances
 
-**Note**: See `config.yaml` for complete examples with all stream types. Simply uncomment the stream type and filters you want to use.
-
 filters:
   # DEX filters (for dex_trades, dex_orders, dex_pools), Transaction
   programs:
@@ -103,6 +159,8 @@ filters:
   signers:
     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
 ```
+
+**Note**: See `config.yaml` for complete examples with all stream types. Simply uncomment the stream type and filters you want to use.
 
 ## Examples
 
@@ -153,16 +211,6 @@ filters:
   signers:
     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
 ```
-
-## Additional Options
-
-### Log Level
-
-```bash
-python main.py --log-level DEBUG
-```
-
-Available log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`
 
 ## Programmatic Usage
 

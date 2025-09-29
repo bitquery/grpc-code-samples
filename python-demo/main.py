@@ -16,14 +16,19 @@ def main():
     parser = argparse.ArgumentParser(description='CoreCast Python Client')
     parser.add_argument(
         '--config', 
-        default='./configs/dex_trades.yaml',
-        help='Path to configuration file (default: ./configs/dex_trades.yaml)'
+        default='./config.yaml',
+        help='Path to configuration file (default: ./config.yaml)'
     )
     parser.add_argument(
         '--log-level',
         choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
         default='INFO',
         help='Set the logging level (default: INFO)'
+    )
+    parser.add_argument(
+        '--latency',
+        action='store_true',
+        help='Enable latency check mode (minimal logging, stops after 10 unique slots)'
     )
     
     args = parser.parse_args()
@@ -54,8 +59,9 @@ def main():
             f"filters.signers={len(config.filters.signers)}"
         )
         
+
         # Create client
-        client = CoreCastClient(config)
+        client = CoreCastClient(config, measure_latency=args.latency)
         
         # Set up signal handling
         with signal_handler() as interrupted:

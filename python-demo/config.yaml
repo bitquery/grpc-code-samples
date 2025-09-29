@@ -1,0 +1,77 @@
+# CoreCast Configuration
+# Uncomment the stream type and filters you want to use
+
+server:
+  address: "corecast.bitquery.io"
+  authorization: "ory_at_OA96Ck2Bn5v60P6fsJNGkuQsBgXuAy0VPn3e6rOClIA.F-k8xMMFuXqLcvUJatt39PDg9O-Q9B4wT0SOOaLA0BM"
+  insecure: false
+
+# Stream type - uncomment ONE
+stream:
+  type: "dex_trades"
+  # type: "dex_orders"
+  # type: "dex_pools"
+  # type: "transactions"
+  # type: "transfers"
+  # type: "balances"
+
+# =============================================================================
+# FILTERS - Uncomment the section(s) you need
+# At least one filter must be specified
+# =============================================================================
+
+# DEX Trades / Orders / Pools filters
+filters:
+  programs:
+    - "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA" # pumpswap
+    - "SoLFiHG9TfgtdUXUjWAxi3LtvYuFyDLVhBWxdMZxyCe" # solfi
+    - "PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY" # phoenix
+    - "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p" # bonkswap
+    - "obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y" # obric
+    - "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4" # jupiter
+    # - "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb" # openbook
+  tokens:
+    - "So11111111111111111111111111111111111111112" # WSOL
+    # - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
+  # pools:
+  #   - "5tUu7bX8d8Zz1v3v4Y9H9F6J7K8L9M0N1O2P3Q4R5S6T"
+  # traders:
+  #   - "7GJz9X7b1G9Nf1d5uQq2Z3B4nPq6F8d9LmNoPQrsTUV"
+# Transactions filters
+# filters:
+#   programs:
+#     - "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA" # pumpswap
+#   signers:
+#     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
+
+# Transfers filters
+# filters:
+#   senders:
+#     - "DSqMPMsMAbEJVNuPKv1ZFdzt6YvJaDPDddfeW7ajtqds"
+#   receivers:
+#     - "ReceiverAddressHere..."
+#   tokens:
+#     - "So11111111111111111111111111111111111111112" # SOL
+#     - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
+
+# Balances filters
+# filters:
+#   addresses:
+#     - "DSqMPMsMAbEJVNuPKv1ZFdzt6YvJaDPDddfeW7ajtqds"
+#   tokens:
+#     - "So11111111111111111111111111111111111111112" # SOL
+
+# =============================================================================
+# Common Addresses Reference
+# =============================================================================
+# Tokens:
+#   SOL:  So11111111111111111111111111111111111111112
+#   USDC: EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v
+#   USDT: Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB
+#   BONK: DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263
+#
+# DEX Programs:
+#   Jupiter:  JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4
+#   Phoenix:  PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY
+#   Pumpswap: pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA
+#   OpenBook: opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb

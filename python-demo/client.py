@@ -7,6 +7,7 @@ import signal
 import sys
 import logging
 import base58
+from datetime import datetime
 from typing import Optional, List
 from contextlib import contextmanager
 
@@ -26,13 +27,35 @@ logger = logging.getLogger(__name__)
 class CoreCastClient:
     """CoreCast gRPC client for streaming Solana data."""
     
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, measure_latency: bool = False):
         self.config = config
         self.channel: Optional[grpc.Channel] = None
         self.client: Optional[corecast_pb2_grpc.CoreCastStub] = None
+        self.measure_latency = measure_latency  # Add this line
         
     def connect(self) -> None:
         """Establish gRPC connection to CoreCast server."""
+        # Validate authorization token
+        if not self.config.server.authorization or self.config.server.authorization == "ory_at_":
+            logger.error("=" * 80)
+            logger.error("AUTHORIZATION TOKEN NOT SET")
+            logger.error("=" * 80)
+            logger.error("")
+            logger.error("You have not set a valid authorization token in config.yaml")
+            logger.error("")
+            logger.error("Current value: authorization: \"%s\"", self.config.server.authorization or "(empty)")
+            logger.error("")
+            logger.error("To fix this:")
+            logger.error("  1. Get your auth token from: https://docs.bitquery.io/docs/authorisation/how-to-generate/")
+            logger.error("  2. Open config.yaml")
+            logger.error("  3. Replace 'ory_at_' with your actual token (starts with 'ory_at_')")
+            logger.error("")
+            logger.error("Example:")
+            logger.error("  authorization: \"ory_at_abc123def456...\"")
+            logger.error("")
+            logger.error("=" * 80)
+            sys.exit(1)
+        
         # Create credentials
         if self.config.server.insecure:
             credentials = grpc.insecure_channel_credentials()
@@ -107,11 +130,17 @@ class CoreCastClient:
         
         try:
             stream = self.client.DexTrades(req, metadata=metadata)
-            self._consume_dex_trades(stream)
+            
+            # Use latency check version if flag is set
+            if self.measure_latency:
+                self._latency_check_dex_trades(stream)
+            else:
+                self._consume_dex_trades(stream)
+                
         except grpc.RpcError as e:
             logger.error(f"DEX trades subscription failed: {e}")
             raise
-    
+
     def stream_dex_orders(self):
         """Stream DEX orders."""
         if not self.client:
@@ -215,16 +244,52 @@ class CoreCastClient:
         except grpc.RpcError as e:
             logger.error(f"Balances subscription failed: {e}")
             raise
-    
+
+    def _latency_check_dex_trades(self, stream):
+        """Minimal logging for latency testing - only first 10 unique slots."""
+        logger.info("Latency check mode: Capturing first 10 unique slots only...")
+        seen_slots = set()
+        
+        try:
+            for msg in stream:
+                # Capture timestamp IMMEDIATELY
+                received_timestamp = datetime.utcnow()
+                slot = msg.Block.Slot
+                
+                # Only log first time we see each slot
+                if slot not in seen_slots:
+                    seen_slots.add(slot)
+                    print(f"Block Slot: {slot}")
+                    print(f"Received Timestamp: {received_timestamp.isoformat()}")
+                    
+                    # Stop after 10 unique slots
+                    if len(seen_slots) >= 10:
+                        logger.info("Captured 10 unique slots. Stopping.")
+                        break
+                        
+        except KeyboardInterrupt:
+            logger.info("Stream interrupted by user")
+            raise
+        except grpc.RpcError as e:
+            logger.debug(f"Stream ended: {e}")
+
     def _consume_dex_trades(self, stream):
-        """Consume DEX trades stream."""
+        """Consume DEX trades stream with full details."""
         logger.info("Streaming DEX trades. Press Ctrl+C to stop.")
         try:
             for msg in stream:
                 try:
+                    # Capture receive timestamp
+                    received_timestamp = datetime.utcnow()
+                    
+                    # Print timestamp and slot info
+                    print(f"\n{'='*80}")
+                    print(f"Block Slot: {msg.Block.Slot}")
+                    print(f"Received Timestamp: {received_timestamp.isoformat()}")
+                    print(f"{'='*80}\n")
+                    
                     # Extract trade information
                     logger.debug(f"Received message: {msg}")
-
                     print_protobuf_message(msg)                    
                 except Exception as e:
                     logger.error(f"Error processing trade: {e}")
@@ -234,7 +299,7 @@ class CoreCastClient:
             raise
         except grpc.RpcError as e:
             logger.debug(f"Stream ended: {e}")
-    
+            
     def _consume_dex_orders(self, stream):
         """Consume DEX orders stream."""
         logger.info("Streaming DEX orders. Press Ctrl+C to stop.")

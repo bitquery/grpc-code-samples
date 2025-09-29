@@ -245,34 +245,6 @@ class CoreCastClient:
             logger.error(f"Balances subscription failed: {e}")
             raise
 
-    def _latency_check_dex_trades(self, stream):
-        """Minimal logging for latency testing - only first 10 unique slots."""
-        logger.info("Latency check mode: Capturing first 10 unique slots only...")
-        seen_slots = set()
-        
-        try:
-            for msg in stream:
-                # Capture timestamp IMMEDIATELY
-                received_timestamp = datetime.utcnow()
-                slot = msg.Block.Slot
-                
-                # Only log first time we see each slot
-                if slot not in seen_slots:
-                    seen_slots.add(slot)
-                    print(f"Block Slot: {slot}")
-                    print(f"Received Timestamp: {received_timestamp.isoformat()}")
-                    
-                    # Stop after 10 unique slots
-                    if len(seen_slots) >= 10:
-                        logger.info("Captured 10 unique slots. Stopping.")
-                        break
-                        
-        except KeyboardInterrupt:
-            logger.info("Stream interrupted by user")
-            raise
-        except grpc.RpcError as e:
-            logger.debug(f"Stream ended: {e}")
-
     def _consume_dex_trades(self, stream):
         """Consume DEX trades stream with full details."""
         logger.info("Streaming DEX trades. Press Ctrl+C to stop.")

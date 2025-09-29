@@ -50,6 +50,18 @@ python3 main.py
 (program IN filter.programs) AND (pool IN filter.pools) AND (token IN filter.tokens)
 ```
 
+## Additional Options
+
+### Log Level
+
+Control the verbosity of logging output:
+
+```bash
+python main.py --log-level DEBUG
+```
+
+Available log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`
+
 ## Configuration
 
 All parameters are loaded from `config.yaml` in the project root.
@@ -76,8 +88,6 @@ server:
 stream:
   type: "dex_trades" # or dex_orders, dex_pools, transactions, transfers, balances
 
-**Note**: See `config.yaml` for complete examples with all stream types. Simply uncomment the stream type and filters you want to use.
-
 filters:
   # DEX filters (for dex_trades, dex_orders, dex_pools), Transaction
   programs:
@@ -103,6 +113,8 @@ filters:
   signers:
     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
 ```
+
+**Note**: See `config.yaml` for complete examples with all stream types. Simply uncomment the stream type and filters you want to use.
 
 ## Examples
 
@@ -153,16 +165,6 @@ filters:
   signers:
     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
 ```
-
-## Additional Options
-
-### Log Level
-
-```bash
-python main.py --log-level DEBUG
-```
-
-Available log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`
 
 ## Programmatic Usage
 
@@ -236,3 +238,9 @@ The package includes:
 - Request and response message types
 - Stream message definitions
 - Solana-specific message types (blocks, DEX trades, transfers, etc.)
+
+### Schema Reference
+
+To explore the complete protobuf schema definitions and message structures, check out the official schema repository:
+
+**[Bitquery Streaming Protobuf Schema](https://github.com/bitquery/streaming_protobuf/tree/main/solana)**

@@ -64,32 +64,41 @@ Available log levels: `DEBUG`, `INFO`, `WARNING`, `ERROR`
 
 ### Latency Testing Mode
 
-Measure stream latency by capturing timestamps for the first 10 unique block slots:
+Measure stream latency by capturing timestamps for unique block slots:
 
 ```bash
-python main.py --latency
+python main.py --latency > latency_test.log
 ```
+
+Supported stream types:
+
+- `dex_trades` - DEX trade latency
+- `transactions` - Transaction latency
+- `transfers` - Transfer latency
+
+Configure the stream type in `config.yaml` before running with `--latency` flag.
 
 **What it does:**
 
-- Enables minimal logging mode optimized for latency measurement
-- Captures only the first occurrence of each unique slot
-- Stops automatically after collecting 10 unique slots
-- Outputs block slot numbers and received timestamps for analysis
+- Captures unique block slots continuously until you stop it (Ctrl+C)
+- Records both ISO timestamp and nanosecond precision
+- Minimal logging for accurate measurements
 
 **Example output:**
 
 ```
-Block Slot: 370054155
-Received Timestamp: 2025-09-29T13:52:48.872508
-Block Slot: 370054156
-Received Timestamp: 2025-09-29T13:52:49.393580
+Block Slot: 370061875
+Received Timestamp: 2025-09-29T14:44:05.872508
+Received Timestamp (ns): 1727615045872508000
+Block Slot: 370061876
+Received Timestamp: 2025-09-29T14:44:06.123456
+Received Timestamp (ns): 1727615046123456789
 ...
 ```
 
 **Analyzing latency data:**
 
-After capturing latency data, you can analyze it using the provided analysis script:
+After capturing latency data for any of the streams `dex_trades`, `transactions`, `transfers`, you can analyze it using the provided analysis script:
 
 ```bash
 # Capture latency data (redirect to file)
@@ -101,12 +110,12 @@ python analyze_latency.py latency_test.log
 
 The `analyze_latency.py` script will:
 
-- Compare received timestamps against actual block times from Solana RPC
-- Calculate latency statistics (min, max, average, median, P95, P99)
-- Show latency distribution across different time ranges
-- Report what percentage of messages arrived within the same second as the block time
+- Fetch actual block creation times from Solana RPC
+- Calculate latency for each slot (your timestamp - blockchain timestamp)
+- Show latency distribution (% within 100ms, 500ms, 1 second)
+- Provide statistics: min, max, average, median, P95, P99
 
-**Note:** The latency flag currently only works with `dex_trades` stream type.
+**Note:** The latency flag currently works with `dex_trades` stream type, if you want to check `transactions` or `transfers` stream latency do changes in `config.yaml` file.
 
 ## Configuration
 

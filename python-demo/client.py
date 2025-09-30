@@ -1,6 +1,7 @@
 """
 CoreCast gRPC client for streaming Solana blockchain data.
 """
+import time
 import grpc
 import ssl
 import signal
@@ -199,7 +200,13 @@ class CoreCastClient:
         
         try:
             stream = self.client.Transactions(req, metadata=metadata)
-            self._consume_parsed_transactions(stream)
+            
+            # Use latency check version if flag is set
+            if self.measure_latency:
+                self._latency_check_transactions(stream)
+            else:
+                self._consume_parsed_transactions(stream)
+                
         except grpc.RpcError as e:
             logger.error(f"Transactions subscription failed: {e}")
             raise
@@ -220,7 +227,13 @@ class CoreCastClient:
         
         try:
             stream = self.client.Transfers(req, metadata=metadata)
-            self._consume_transfers_tx(stream)
+            
+            # Use latency check version if flag is set
+            if self.measure_latency:
+                self._latency_check_transfers(stream)
+            else:
+                self._consume_transfers_tx(stream)
+                
         except grpc.RpcError as e:
             logger.error(f"Transfers subscription failed: {e}")
             raise
@@ -246,29 +259,89 @@ class CoreCastClient:
             raise
 
     def _latency_check_dex_trades(self, stream):
-        """Minimal logging for latency testing - only first 10 unique slots."""
-        logger.info("Latency check mode: Capturing first 10 unique slots only...")
+        """Ultra-minimal logging for latency testing - runs until user stops (Ctrl+C)."""
+        logger.info("Latency check mode: Capturing unique slots. Press Ctrl+C to stop...")
+        
+        # Pre-allocate to avoid lookups in hot path
         seen_slots = set()
+        seen_add = seen_slots.add
+        seen_contains = seen_slots.__contains__
         
         try:
             for msg in stream:
-                # Capture timestamp IMMEDIATELY
-                received_timestamp = datetime.utcnow()
+                ts_ns = time.time_ns()
                 slot = msg.Block.Slot
                 
-                # Only log first time we see each slot
-                if slot not in seen_slots:
-                    seen_slots.add(slot)
-                    print(f"Block Slot: {slot}")
-                    print(f"Received Timestamp: {received_timestamp.isoformat()}")
+                if not seen_contains(slot):
+                    seen_add(slot)
                     
-                    # Stop after 10 unique slots
-                    if len(seen_slots) >= 10:
-                        logger.info("Captured 10 unique slots. Stopping.")
-                        break
-                        
+                    ts_sec = ts_ns / 1_000_000_000
+                    dt = datetime.utcfromtimestamp(ts_sec)
+                    
+                    print(f"Block Slot: {slot}")
+                    print(f"Received Timestamp: {dt.isoformat()}")
+                    print(f"Received Timestamp (ns): {ts_ns}")
+                    
         except KeyboardInterrupt:
-            logger.info("Stream interrupted by user")
+            logger.info(f"Stream interrupted by user. Captured {len(seen_slots)} unique slots.")
+            raise
+        except grpc.RpcError as e:
+            logger.debug(f"Stream ended: {e}")
+
+    def _latency_check_transactions(self, stream):
+        """Ultra-minimal logging for transaction latency testing."""
+        logger.info("Latency check mode: Capturing unique transaction slots. Press Ctrl+C to stop...")
+        
+        seen_slots = set()
+        seen_add = seen_slots.add
+        seen_contains = seen_slots.__contains__
+        
+        try:
+            for msg in stream:
+                ts_ns = time.time_ns()
+                slot = msg.Block.Slot
+                
+                if not seen_contains(slot):
+                    seen_add(slot)
+                    
+                    ts_sec = ts_ns / 1_000_000_000
+                    dt = datetime.utcfromtimestamp(ts_sec)
+                    
+                    print(f"Block Slot: {slot}")
+                    print(f"Received Timestamp: {dt.isoformat()}")
+                    print(f"Received Timestamp (ns): {ts_ns}")
+                    
+        except KeyboardInterrupt:
+            logger.info(f"Stream interrupted by user. Captured {len(seen_slots)} unique slots.")
+            raise
+        except grpc.RpcError as e:
+            logger.debug(f"Stream ended: {e}")
+
+    def _latency_check_transfers(self, stream):
+        """Ultra-minimal logging for transfer latency testing."""
+        logger.info("Latency check mode: Capturing unique transfer slots. Press Ctrl+C to stop...")
+        
+        seen_slots = set()
+        seen_add = seen_slots.add
+        seen_contains = seen_slots.__contains__
+        
+        try:
+            for msg in stream:
+                ts_ns = time.time_ns()
+                slot = msg.Block.Slot
+                
+                if not seen_contains(slot):
+                    seen_add(slot)
+                    
+                    ts_sec = ts_ns / 1_000_000_000
+                    dt = datetime.utcfromtimestamp(ts_sec)
+                    
+                    print(f"Block Slot: {slot}")
+                    print(f"Received Timestamp: {dt.isoformat()}")
+                    print(f"Received Timestamp (ns): {ts_ns}")
+                    
+        except KeyboardInterrupt:
+            logger.info(f"Stream interrupted by user. Captured {len(seen_slots)} unique slots.")
             raise
         except grpc.RpcError as e:
             logger.debug(f"Stream ended: {e}")

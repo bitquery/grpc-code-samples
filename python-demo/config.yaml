@@ -14,7 +14,6 @@ stream:
   # type: "transactions"
   # type: "transfers"
   # type: "balances"
-
 # =============================================================================
 # FILTERS - Uncomment the section(s) you need
 # At least one filter must be specified
@@ -29,10 +28,10 @@ filters:
     - "BSwp6bEBihVLdqJRKGgzjcGLHkcTuzmSo1TQkHepzH8p" # bonkswap
     - "obriQD1zbpyLz95G5n7nJe6a4DPjpFwa5XYPoNm113y" # obric
     - "JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4" # jupiter
-    # - "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb" # openbook
+  # - "opnb2LAfJYbRMAHHvqjCwQxanZn7ReEHp1k81EohpZb" # openbook
   tokens:
     - "So11111111111111111111111111111111111111112" # WSOL
-    # - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
+    - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
   # pools:
   #   - "5tUu7bX8d8Zz1v3v4Y9H9F6J7K8L9M0N1O2P3Q4R5S6T"
   # traders:
@@ -41,18 +40,17 @@ filters:
 # filters:
 #   programs:
 #     - "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA" # pumpswap
-#   signers:
-#     - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
-
+# signers:
+#   - "ETcW7iuVraMKLMJayNCCsr9bLvKrJPDczy1CMVMPmXTc"
 # Transfers filters
 # filters:
-#   senders:
-#     - "DSqMPMsMAbEJVNuPKv1ZFdzt6YvJaDPDddfeW7ajtqds"
-#   receivers:
-#     - "ReceiverAddressHere..."
-#   tokens:
-#     - "So11111111111111111111111111111111111111112" # SOL
-#     - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
+# senders:
+#   - "DSqMPMsMAbEJVNuPKv1ZFdzt6YvJaDPDddfeW7ajtqds"
+# receivers:
+# - "ReceiverAddressHere..."
+# tokens:
+#   - "So11111111111111111111111111111111111111112" # SOL
+#   - "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v" # USDC
 
 # Balances filters
 # filters:

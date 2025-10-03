@@ -1,0 +1,11 @@
+[package]
+name = "rust-demo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+tonic = { version = "0.9", features = ["tls", "transport"] }
+
+[build-dependencies]
+tonic-build = "0.9"

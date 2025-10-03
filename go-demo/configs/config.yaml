@@ -1,0 +1,28 @@
+server:
+  address: "corecast.bitquery.io"
+  insecure: false
+  authorization: "ory_"  
+
+stream:
+  # one of: dex_trades, dex_orders, dex_pools, transactions, transfers, balances
+  type: "dex_trades"
+
+filters:
+  # DEX filters (for dex_trades, dex_orders, dex_pools)
+  programs:
+    - "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P"
+  pools: []
+  tokens: []
+  traders: []   # not used for dex_pools
+
+  # Transfer filters (for transfers)
+  senders: []
+  receivers: []
+
+  # Balance filters (for balances)
+  addresses: []
+
+  # Transaction filters (for transactions)
+  signers: []
+
+

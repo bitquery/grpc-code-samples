@@ -9,6 +9,7 @@ tonic = { version = "0.10", features = ["tls", "tls-roots"] }
 prost = "0.12"
 serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
+bs58 = "0.5"
 
 [build-dependencies]
 tonic-build = "0.10"

@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use tonic::metadata::MetadataValue;
 use tonic::transport::Channel;
+use bs58;
 
 pub mod solana_corecast {
     tonic::include_proto!("solana_corecast");
@@ -60,6 +61,10 @@ fn create_address_filter(addresses: Option<Vec<String>>) -> Option<AddressFilter
     addresses.map(|addrs| AddressFilter { addresses: addrs })
 }
 
+fn encode_base58(bytes: &[u8]) -> String {
+    bs58::encode(bytes).into_string()
+}
+
 fn add_auth_header<T>(mut request: tonic::Request<T>, config: &Config) -> Result<tonic::Request<T>, Box<dyn std::error::Error>> {
     if !config.server.authorization.is_empty() {
         let auth_value = MetadataValue::try_from(format!("Bearer {}", config.server.authorization))?;
@@ -86,13 +91,15 @@ async fn stream_dex_trades(client: &mut CoreCastClient<Channel>, config: &Config
     while let Some(message) = stream.message().await? {
         println!("Received DEX trade message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
-        println!("  Transaction Index: {:?}", message.transaction.as_ref().map(|t| t.index));
         if let Some(trade) = &message.trade {
-            println!("  Trade Program: {:?}", trade.dex.as_ref().map(|d| &d.program_address));
-            println!("  Trade Market: {:?}", trade.market.as_ref().map(|m| &m.market_address));
+            if let Some(dex) = &trade.dex {
+                println!("  Trade Program: {}", encode_base58(&dex.program_address));
+            }
+            if let Some(market) = &trade.market {
+                println!("  Trade Market: {}", encode_base58(&market.market_address));
+            }
         }
-        println!("First message processed. Exiting.");
-        break;
+        // continue streaming
     }
     
     Ok(())
@@ -116,10 +123,13 @@ async fn stream_dex_orders(client: &mut CoreCastClient<Channel>, config: &Config
     while let Some(message) = stream.message().await? {
         println!("Received DEX order message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
-        println!("  Transaction Index: {:?}", message.transaction.as_ref().map(|t| t.index));
-        println!("  Order Program: {:?}", message.order.as_ref().map(|o| o.dex.as_ref().map(|d| &d.program_address)));
-        println!("First message processed. Exiting.");
-        break;
+       
+        if let Some(order) = &message.order {
+            if let Some(dex) = &order.dex {
+                println!("  Order Program: {}", encode_base58(&dex.program_address));
+            }
+        }
+        // continue streaming
     }
     
     Ok(())
@@ -142,10 +152,13 @@ async fn stream_dex_pools(client: &mut CoreCastClient<Channel>, config: &Config)
     while let Some(message) = stream.message().await? {
         println!("Received DEX pool message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
-        println!("  Transaction Index: {:?}", message.transaction.as_ref().map(|t| t.index));
-        println!("  Pool Event Program: {:?}", message.pool_event.as_ref().map(|p| p.dex.as_ref().map(|d| &d.program_address)));
-        println!("First message processed. Exiting.");
-        break;
+       
+        if let Some(pool_event) = &message.pool_event {
+            if let Some(dex) = &pool_event.dex {
+                println!("  Pool Event Program: {}", encode_base58(&dex.program_address));
+            }
+        }
+        // continue streaming
     }
     
     Ok(())
@@ -168,8 +181,7 @@ async fn stream_transactions(client: &mut CoreCastClient<Channel>, config: &Conf
         println!("Received transaction message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
         println!("  Transaction Signature: {:?}", message.transaction.map(|t| t.signature));
-        println!("First message processed. Exiting.");
-        break;
+        // continue streaming
     }
     
     Ok(())
@@ -192,10 +204,16 @@ async fn stream_transfers(client: &mut CoreCastClient<Channel>, config: &Config)
     while let Some(message) = stream.message().await? {
         println!("Received transfer message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
-        println!("  Transaction Index: {:?}", message.transaction.as_ref().map(|t| t.index));
-        println!("  Transfer Sender: {:?}", message.transfer.map(|t| t.sender));
-        println!("First message processed. Exiting.");
-        break;
+       
+        if let Some(transfer) = &message.transfer {
+            if let Some(sender) = &transfer.sender {
+                println!("  Transfer Sender: {}", encode_base58(&sender.address));
+            }
+            if let Some(receiver) = &transfer.receiver {
+                println!("  Transfer Receiver: {}", encode_base58(&receiver.address));
+            }
+        }
+        // continue streaming
     }
     
     Ok(())
@@ -217,8 +235,12 @@ async fn stream_balances(client: &mut CoreCastClient<Channel>, config: &Config) 
     while let Some(message) = stream.message().await? {
         println!("Received balance message:");
         println!("  Block Slot: {:?}", message.block.map(|b| b.slot));
-        println!("  Transaction Index: {:?}", message.transaction.as_ref().map(|t| t.index));
-        println!("  Balance Address: {:?}", message.balance_update.as_ref().map(|b| b.balance_update.as_ref().map(|bu| &bu.account_index)));
+       
+        if let Some(balance_update) = &message.balance_update {
+            if let Some(currency) = &balance_update.currency {
+                println!("  Balance Token: {}", encode_base58(&currency.mint_address));
+            }
+        }
         println!("First message processed. Exiting.");
         break;
     }

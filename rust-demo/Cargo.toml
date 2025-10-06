@@ -5,7 +5,10 @@ edition = "2021"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
-tonic = { version = "0.9", features = ["tls", "transport"] }
+tonic = { version = "0.10", features = ["tls", "tls-roots"] }
+prost = "0.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_yaml = "0.9"
 
 [build-dependencies]
-tonic-build = "0.9"
+tonic-build = "0.10"

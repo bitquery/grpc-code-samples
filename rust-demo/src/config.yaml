@@ -1,6 +1,6 @@
 server:
   address: "corecast.bitquery.io"
-  authorization: ""
+  authorization: "ory_"
   insecure: false
 
 stream:
@@ -15,6 +15,13 @@ stream:
 filters:
   programs:
     - "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P" 
+  pools: []
+  tokens: []
+  traders: []
+  senders: []
+  receivers: []
+  addresses: []
+  signers: []
 #  pool: # Market.MarketAddress
 #    - "5tUu7bX8d8Zz1v3v4Y9H9F6J7K8L9M0N1O2P3Q4R5S6T"
 #  traders: # Trade.Buy.Account / Trade.Sell.Account

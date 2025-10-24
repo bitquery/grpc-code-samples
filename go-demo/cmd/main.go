@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"flag"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -26,7 +25,7 @@ import (
 )
 
 func main() {
-    configPath := flag.String("config", "./configs/config.yaml", "Path to configuration file")
+	configPath := flag.String("config", "./configs/config.yaml", "Path to configuration file")
 	flag.Parse()
 
 	config, err := internal.LoadConfig(*configPath)
@@ -35,74 +34,34 @@ func main() {
 		os.Exit(1)
 	}
 
-    // Debug loaded configuration (without leaking secrets)
-    log.Debug(
-        "config loaded",
-        "path", *configPath,
-        "server.address", config.Server.Address,
-        "server.insecure", config.Server.Insecure,
-        "server.has_auth", config.Server.Authorization != "",
-        "stream.type", config.Stream.Type,
-        "filters.programs", len(config.Filters.Programs),
-        "filters.pools", len(config.Filters.Pools),
-        "filters.tokens", len(config.Filters.Tokens),
-        "filters.traders", len(config.Filters.Traders),
-        "filters.senders", len(config.Filters.Senders),
-        "filters.receivers", len(config.Filters.Receivers),
-        "filters.addresses", len(config.Filters.Addresses),
-        "filters.signers", len(config.Filters.Signers),
-    )
+	// Debug loaded configuration (without leaking secrets)
+	log.Debug(
+		"config loaded",
+		"path", *configPath,
+		"server.address", config.Server.Address,
+		"server.insecure", config.Server.Insecure,
+		"server.has_auth", config.Server.Authorization != "",
+		"stream.type", config.Stream.Type,
+		"filters.programs", len(config.Filters.Programs),
+		"filters.pools", len(config.Filters.Pools),
+		"filters.tokens", len(config.Filters.Tokens),
+		"filters.traders", len(config.Filters.Traders),
+		"filters.senders", len(config.Filters.Senders),
+		"filters.receivers", len(config.Filters.Receivers),
+		"filters.addresses", len(config.Filters.Addresses),
+		"filters.signers", len(config.Filters.Signers),
+	)
 
-	var ka = keepalive.ClientParameters{
-		Time:                15 * time.Second,
-		Timeout:             5 * time.Second,
-		PermitWithoutStream: true,
-	}
-
-	ctx := context.Background()
-	if config.Server.Authorization != "" {
-		md := metadata.New(map[string]string{"authorization": fmt.Sprintf("Bearer %s", config.Server.Authorization)})
-		ctx = metadata.NewOutgoingContext(ctx, md)
-        log.Debug("authorization metadata attached")
-	}
-
-	var cr credentials.TransportCredentials
-	if config.Server.Insecure {
-		cr = insecure.NewCredentials()
-        log.Debug("grpc transport", "mode", "insecure")
-	} else {
-		cr = credentials.NewTLS(&tls.Config{})
-        log.Debug("grpc transport", "mode", "tls")
-	}
-
-    log.Debug("dialing grpc", "address", config.Server.Address)
-    conn, err := grpc.NewClient(config.Server.Address, grpc.WithTransportCredentials(cr),
-		grpc.WithInitialWindowSize(16<<20),
-		grpc.WithInitialConnWindowSize(128<<20),
-		grpc.WithDefaultCallOptions(
-			grpc.MaxCallRecvMsgSize(64<<20),
-			grpc.MaxCallSendMsgSize(64<<20),
-			//grpc.UseCompressor("gzip"), // zstd or gzip
-		),
-		grpc.WithReadBufferSize(4<<20),
-		grpc.WithWriteBufferSize(4<<20),
-		grpc.WithKeepaliveParams(ka))
-
+	conn, ctx, err := NewConnection(config)
 	if err != nil {
 		log.Error("dial failed", "err", err)
 		os.Exit(1)
 	}
-	defer func() { _ = conn.Close() }()
-    log.Debug("grpc connection established")
 
-	streamCtx, cancelStream := context.WithCancel(ctx)
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
-
-	go func() {
-		<-sigCh
-		log.Debug("interrupt received, cancelling stream...")
-		cancelStream()
+	streamCtx, cancel := signalContext(ctx)
+	defer func() {
+		conn.Close()
+		cancel()
 	}()
 
 	client := proto.NewCoreCastClient(conn)
@@ -129,7 +88,7 @@ func main() {
 			Token:   addrFilterFromSlice(config.Filters.Tokens),
 			Trader:  addrFilterFromSlice(config.Filters.Traders),
 		}
-        log.Info("orders subscribe", "req", req)
+		log.Info("orders subscribe", "req", req)
 		strm, err := client.DexOrders(streamCtx, req)
 		if err != nil {
 			log.Error("orders subscribe", "err", err)
@@ -142,7 +101,7 @@ func main() {
 			Pool:    addrFilterFromSlice(config.Filters.Pools),
 			Token:   addrFilterFromSlice(config.Filters.Tokens),
 		}
-        log.Info("pools subscribe", "req", req)
+		log.Info("pools subscribe", "req", req)
 		strm, err := client.DexPools(streamCtx, req)
 		if err != nil {
 			log.Error("pools subscribe", "err", err)
@@ -154,7 +113,7 @@ func main() {
 			Program: addrFilterFromSlice(config.Filters.Programs),
 			Signer:  addrFilterFromSlice(config.Filters.Signers),
 		}
-        log.Info("transactions subscribe", "req", req)
+		log.Info("transactions subscribe", "req", req)
 		strm, err := client.Transactions(streamCtx, req)
 		if err != nil {
 			log.Error("transactions subscribe", "err", err)
@@ -167,7 +126,7 @@ func main() {
 			Receiver: addrFilterFromSlice(config.Filters.Receivers),
 			Token:    addrFilterFromSlice(config.Filters.Tokens),
 		}
-        log.Info("transfers subscribe", "req", req)
+		log.Info("transfers subscribe", "req", req)
 		strm, err := client.Transfers(streamCtx, req)
 		if err != nil {
 			log.Error("transfers subscribe", "err", err)
@@ -179,7 +138,7 @@ func main() {
 			Address: addrFilterFromSlice(config.Filters.Addresses),
 			Token:   addrFilterFromSlice(config.Filters.Tokens),
 		}
-        log.Info("balances subscribe", "req", req)
+		log.Info("balances subscribe", "req", req)
 		strm, err := client.Balances(streamCtx, req)
 		if err != nil {
 			log.Error("balances subscribe", "err", err)
@@ -190,6 +149,20 @@ func main() {
 		log.Error("unknown stream type", "type", config.Stream.Type, "supported", "dex_trades|dex_orders|dex_pools|transactions|transfers|balances")
 		os.Exit(1)
 	}
+}
+
+func signalContext(parent context.Context) (context.Context, context.CancelFunc) {
+	streamCtx, cancelStream := context.WithCancel(parent)
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-sigCh
+		log.Debug("interrupt received, cancelling stream...")
+		cancelStream()
+	}()
+
+	return streamCtx, cancelStream
 }
 
 func addrFilterFromSlice(addresses []string) *proto.AddressFilter {
@@ -368,4 +341,49 @@ func consumeBalancesTx(strm proto.CoreCast_BalancesClient) {
 			"Post", b.BalanceUpdate.PostBalance,
 		)
 	}
+}
+
+func NewConnection(cfg *internal.Config) (*grpc.ClientConn, context.Context, error) {
+	ka := keepalive.ClientParameters{
+		Time:                15 * time.Second,
+		Timeout:             5 * time.Second,
+		PermitWithoutStream: true,
+	}
+
+	var transport credentials.TransportCredentials
+	if cfg.Server.Insecure {
+		transport = insecure.NewCredentials()
+		log.Debug("grpc transport", "mode", "insecure")
+	} else {
+		transport = credentials.NewTLS(&tls.Config{})
+		log.Debug("grpc transport", "mode", "tls")
+	}
+
+	opts := []grpc.DialOption{
+		grpc.WithTransportCredentials(transport),
+		grpc.WithInitialWindowSize(8 << 20),
+		grpc.WithInitialConnWindowSize(64 << 20),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(32<<20),
+			grpc.MaxCallSendMsgSize(32<<20),
+		),
+		grpc.WithReadBufferSize(2 << 20),
+		grpc.WithWriteBufferSize(2 << 20),
+		grpc.WithKeepaliveParams(ka),
+	}
+
+	log.Debug("dialing grpc", "address", cfg.Server.Address)
+	conn, err := grpc.NewClient(cfg.Server.Address, opts...)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ctx := context.Background()
+	if cfg.Server.Authorization != "" {
+		md := metadata.New(map[string]string{"authorization": cfg.Server.Authorization})
+		ctx = metadata.NewOutgoingContext(ctx, md)
+		log.Debug("authorization metadata attached")
+	}
+
+	return conn, ctx, nil
 }

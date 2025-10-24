@@ -3,7 +3,7 @@ module corecast-client-example
 go 1.24.2
 
 require (
-	github.com/bitquery/streaming_protobuf/v2 v2.2.1-0.20250910144442-d62b715655af
+	github.com/bitquery/streaming_protobuf/v2 v2.2.1
 	github.com/inconshreveable/log15 v2.16.0+incompatible
 	github.com/mostynb/go-grpc-compression v1.2.3
 	github.com/mr-tron/base58 v1.2.0

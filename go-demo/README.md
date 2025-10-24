@@ -1,14 +1,10 @@
-# CoreCast gRPC client example 
+# CoreCast gRPC client example
 
 ## Installation
 
 Retrieving protobuf:
 
-```bash
-go get github.com/bitquery/streaming_protobuf/v2@d62b715655afbe3068876c908e5378ef2e088ece
 ```
-
-```bash
 go mod tidy
 ```
 
@@ -49,7 +45,7 @@ All configuration files follow this structure:
 ```yaml
 server:
   address: "corecast.bitquery.io"
-  insecure: false            
+  insecure: false            		# if false, TLS will be used; true for plaintext (ex. port 80)
   authorization: "<token>"  
 
 stream:

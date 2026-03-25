@@ -209,6 +209,12 @@ function createRequest() {
       addresses: config.filters.traders
     };
   }
+
+  if (config.filters.tokens && config.filters.tokens.length > 0) {
+    request.token = {
+      addresses: config.filters.tokens
+    };
+  }
   
   if (config.filters.signers && config.filters.signers.length > 0) {
     request.signer = {

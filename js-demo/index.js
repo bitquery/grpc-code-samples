@@ -162,7 +162,7 @@ const client = new solanaCorecast.CoreCast(
   config.server.insecure ? grpc.credentials.createInsecure() : grpc.credentials.createSsl(),
   {
     // Performance optimizations
-    'grpc.keepalive_time_ms': 30000,
+    'grpc.keepalive_time_ms', 15000,
     'grpc.keepalive_timeout_ms': 5000,
     'grpc.keepalive_permit_without_calls': true,
     'grpc.http2.max_pings_without_data': 0,

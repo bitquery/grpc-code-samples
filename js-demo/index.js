@@ -161,26 +161,20 @@ const client = new solanaCorecast.CoreCast(
   config.server.address,
   config.server.insecure ? grpc.credentials.createInsecure() : grpc.credentials.createSsl(),
   {
-    // Performance optimizations
-    'grpc.keepalive_time_ms', 15000,
+    'grpc.keepalive_time_ms': 15000, 
     'grpc.keepalive_timeout_ms': 5000,
-    'grpc.keepalive_permit_without_calls': true,
+    'grpc.keepalive_permit_without_calls': 1, 
     'grpc.http2.max_pings_without_data': 0,
-    'grpc.http2.min_time_between_pings_ms': 10000,
-    'grpc.http2.min_ping_interval_without_data_ms': 300000,
-    // Buffer optimizations
-    'grpc.max_receive_message_length': 4 * 1024 * 1024, // 4MB
-    'grpc.max_send_message_length': 4 * 1024 * 1024,    // 4MB
-    // Connection optimizations
-    'grpc.enable_retries': 1,
-    'grpc.max_connection_idle_ms': 30000,
-    'grpc.max_connection_age_ms': 300000,
+    'grpc.http2.min_time_between_pings_ms': 15000,
+    'grpc.http2.min_ping_interval_without_data_ms': 15000,
+    'grpc.max_receive_message_length': 16 * 1024 * 1024,
+    'grpc.max_send_message_length': 16 * 1024 * 1024,
+    'grpc-node.flow_control_window': 8 * 1024 * 1024,
+    'grpc.max_connection_idle_ms': 0,
+    'grpc.max_connection_age_ms': 0,
     'grpc.max_connection_age_grace_ms': 5000,
-
-    'grpc-node.flow_control_window': 8 << 20,
-    'grpc.max_receive_message_length': 32 << 20,
-    'grpc.max_send_message_length': 32 << 20,
-  }
+    'grpc.enable_retries': 1
+}
 
 );
 

@@ -3,6 +3,7 @@ const protoLoader = require('@grpc/proto-loader');
 const fs = require('fs');
 const yaml = require('js-yaml');
 const bs58 = require('bs58');
+const { loadPackageDefination } = require('bitquery-corecast-proto'); 
 
 // Performance optimization: Cache for base58 conversions
 const base58Cache = new Map();
@@ -132,27 +133,7 @@ function printStats() {
 }
 
 // Load proto files with optimized options
-const packageDefinition = protoLoader.loadSync([
-  './solana/corecast/corecast.proto',
-  './solana/corecast/request.proto',
-  './solana/corecast/stream_message.proto',
-  './solana/dex_block_message.proto',
-  './solana/block_message.proto',
-  './solana/token_block_message.proto',
-  './solana/parsed_idl_block_message.proto'
-], {
-  keepCase: true,
-  longs: String,
-  enums: String,
-  defaults: true,
-  oneofs: true,
-  includeDirs: ['.'],
-  // Performance optimizations
-  bytes: Buffer,
-  arrays: true,
-  objects: true
-});
-
+const packageDefinition = loadPackageDefination();
 const protoDescriptor = grpc.loadPackageDefinition(packageDefinition);
 const solanaCorecast = protoDescriptor.solana_corecast;
 
